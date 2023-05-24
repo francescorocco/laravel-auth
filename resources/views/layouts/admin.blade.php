@@ -31,6 +31,10 @@
                         @include('partials.sidebar')
                     </div>
                     <div class="col-10">
+
+                        @include('partials.errors')
+                        @include('partials.messages')
+
                         @yield('content')
                     </div>
                 </div>

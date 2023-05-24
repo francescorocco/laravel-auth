@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Work;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreWorkRequest;
+use App\Http\Requests\UpdateWorkRequest;
 
 class WorkController extends Controller
 {
@@ -26,7 +27,7 @@ class WorkController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.works.create');
     }
 
     /**
@@ -35,9 +36,19 @@ class WorkController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreWorkRequest $request)
     {
-        //
+        $form_data = $request->validated();
+        $form_data['slug'] = Work::generateSlug($request->title);
+        $checkPost = Work::where('slug', $form_data['slug'])->first();
+        if ($checkPost) {
+            return back()->withInput()->withErrors(['slug' => 'Impossibile creare lo slug per questo progetto, cambia il titolo']);
+        }
+
+
+        $newWork = Work::create($form_data);
+
+        return to_route('admin.works.show', ['work'=> $newWork->id])->with('status', 'Progetto aggiornato!');
     }
 
     /**
@@ -46,9 +57,10 @@ class WorkController extends Controller
      * @param  \App\Models\Work  $work
      * @return \Illuminate\Http\Response
      */
-    public function show(Work $work)
+    public function show($id)
     {
-        //
+        $work = Work::findOrFail($id);
+        return view('admin.works.show', compact('work'));
     }
 
     /**
@@ -57,9 +69,10 @@ class WorkController extends Controller
      * @param  \App\Models\Work  $work
      * @return \Illuminate\Http\Response
      */
-    public function edit(Work $work)
+    public function edit($id)
     {
-        //
+        $work = Work::findOrFail($id);
+        return view('admin.works.edit', compact('work'));
     }
 
     /**
@@ -69,9 +82,19 @@ class WorkController extends Controller
      * @param  \App\Models\Work  $work
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Work $work)
+    public function update(UpdateWorkRequest $request, Work $work)
     {
-        //
+        $form_data = $request->validated();
+        $form_data['slug'] = Work::generateSlug($request->title);
+        $checkPost = Work::where('slug', $form_data['slug'])->where('id', '<>', $work->id)->first();
+
+        if ($checkPost) {
+            return back()->withInput()->withErrors(['slug' => 'Impossibile creare lo slug']);
+        }
+
+        $work->update($form_data);
+
+        return to_route('admin.works.show',['work' => $work->id])->with('status', 'Progetto aggiornato!');
     }
 
     /**
@@ -82,6 +105,8 @@ class WorkController extends Controller
      */
     public function destroy(Work $work)
     {
-        //
+        $work->delete();
+        return redirect()->route('admin.works.index');
     }
+
 }

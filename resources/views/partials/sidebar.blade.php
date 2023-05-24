@@ -5,13 +5,13 @@
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
-        <a href="{{route('admin.dashboard')}}" class="nav-link active" aria-current="page">
+        <a href="{{route('admin.dashboard')}}" class="nav-link @if(Route::currentRouteName()=='admin.dashboard') active @endif" aria-current="page">
           <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
             Dashboard
         </a>
       </li>
       <li class="nav-item">
-        <a href="{{route('admin.works.index')}}" class="nav-link" aria-current="page">
+        <a href="{{route('admin.works.index')}}" class="nav-link @if(Route::currentRouteName()=='admin.works.index') active @endif"" aria-current="page">
           <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
             Lista Progetti
         </a>

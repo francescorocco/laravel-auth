@@ -20,6 +20,7 @@ class WorkSeeder extends Seeder
         for($i = 0; $i < 10; $i++){
             $newWork = new Work();
             $newWork->title = $faker->sentence(5);
+            $newWork->description = $faker->words(10,true);
             $newWork->slug = Str::slug($newWork->title, '-');
             $newWork->save();
         }
